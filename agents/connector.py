@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def connector_agent(state):
-    print("🚀 Connector Agent Started")
+    print("Connector Agent Started")
     repo_url = state.get("repo_url")
     local_path = "cloned_repo"
 
@@ -17,7 +17,7 @@ def connector_agent(state):
         state["error"] = "Missing 'repo_url' in state."
         return state
 
-    print(f"📦 Cloning repo: {repo_url}")
+    print(f"Cloning repo: {repo_url}")
 
 
     if os.path.exists(local_path):
