@@ -27,7 +27,15 @@ def extract_js_comment(code):
 
 
 def commentor_agent(state):
-    parsed_files = state.get("parsed_files",[])
+    parsed_files = state.get("parsed_files", [])
+    
+    # Safety check for None or empty parsed_files
+    if not parsed_files:
+        state["comments_summary"] = []
+        state["commentor_status"] = "error"
+        state["commentor_error"] = "No parsed files found in state"
+        return state
+    
     comments_summary = []
 
     for file_info in parsed_files:

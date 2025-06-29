@@ -1,7 +1,7 @@
 import os
 
 def readme_agent(state):
-    repo_path = state("repo_path"," ")
+    repo_path = state.get("local_repo_path", "")
 
     # Possible file names for README
     readme_files = ["README.md", "README.txt", "README.rst", "README"]
