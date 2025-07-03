@@ -7,6 +7,7 @@ from agents.parser import parser_agent
 from agents.commentor import commentor_agent
 from agents.readme_agent import readme_agent
 from agents.commit_agent import commit_agent
+from agents.doc_agent import doc_agent
 
 load_dotenv()
 
@@ -36,6 +37,9 @@ class RepoState(TypedDict, total=False):
     commit_history: Optional[List[dict]]
     commit_status: str
 
+    # step 6: Docs agent
+    project_docs: str
+
 ## create LangGraph
 def build_graph():
     builder = StateGraph(RepoState)
@@ -44,13 +48,15 @@ def build_graph():
     builder.add_node("CommentorAgent", commentor_agent)
     builder.add_node("ReadmeAgent", readme_agent)
     builder.add_node("CommitAgent", commit_agent)
+    builder.add_node("DocsAgent", doc_agent)
 
     builder.set_entry_point("ConnectorAgent")
     builder.add_edge("ConnectorAgent", "ParserAgent")
     builder.add_edge("ParserAgent", "CommentorAgent")
     builder.add_edge("CommentorAgent", "ReadmeAgent")
     builder.add_edge("ReadmeAgent", "CommitAgent")
-    builder.set_finish_point("CommitAgent")
+    builder.add_edge("CommitAgent", "DocsAgent")
+    builder.set_finish_point("DocsAgent")
     return builder.compile()
 
 if __name__ == "__main__":
@@ -62,7 +68,6 @@ if __name__ == "__main__":
     final_state = graph.invoke(initial_state)
     print("Final State:", final_state)
 
-    print("Commit History:")
-    for commit in final_state.get("commit_history", [])[:5]:
-        print(f"{commit['date']} - {commit['author']}: {commit['message']}")
+    print(final_state.get("project_docs", "No documentation generated"))
+
 
