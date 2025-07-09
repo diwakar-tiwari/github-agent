@@ -7,7 +7,7 @@ def diagram_agent(state):
     # Prepare file structure overview
     file_lines = []
     for f in parsed_files:
-        file_lines.append(f"{f['language']} -> {f['path']}")
+        file_lines.append(f"{f['language']} -> {f['file_path']}")
 
     file_text = "\n".join(file_lines)
 

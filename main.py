@@ -9,6 +9,7 @@ from agents.readme_agent import readme_agent
 from agents.commit_agent import commit_agent
 from agents.doc_agent import doc_agent
 from agents.diagram_agent import diagram_agent
+from agents.pdf_exporter import export_docs_as_pdf
 
 load_dotenv()
 
@@ -45,6 +46,10 @@ class RepoState(TypedDict, total=False):
     diagram_mermaid: Optional[str]
     diagram_status: Optional[str]
 
+    # step 8: PDF exporter
+    pdf_path: Optional[str]
+    pdf_status: Optional[str]
+
 
 ## create LangGraph
 def build_graph():
@@ -56,6 +61,7 @@ def build_graph():
     builder.add_node("CommitAgent", commit_agent)
     builder.add_node("DocsAgent", doc_agent)
     builder.add_node("DiagramAgent", diagram_agent)
+    builder.add_node("PDFExporter", export_docs_as_pdf)
 
     builder.set_entry_point("ConnectorAgent")
     builder.add_edge("ConnectorAgent", "ParserAgent")
@@ -63,8 +69,9 @@ def build_graph():
     builder.add_edge("CommentorAgent", "ReadmeAgent")
     builder.add_edge("ReadmeAgent", "CommitAgent")
     builder.add_edge("CommitAgent", "DocsAgent")
-    builder.set_finish_point("DocsAgent", "DiagramAgent")
-    builder.add_edge("DiagramAgent", END)
+    builder.add_edge("DocsAgent", "DiagramAgent")
+    builder.add_edge("DiagramAgent", "PDFExporter")
+    builder.add_edge("PDFExporter", END)
     return builder.compile()
 
 if __name__ == "__main__":
