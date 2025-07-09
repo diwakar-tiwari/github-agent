@@ -1,6 +1,5 @@
 langchain==0.3.10
 langchain-core==0.3.17
-langchain-community==0.3.10
 langchain-groq==0.2.1
 langgraph==0.2.60
 langsmith==0.1.129
@@ -9,3 +8,5 @@ python-dotenv==1.0.1
 gitpython==3.1.43
 tqdm==4.66.6
 openai==1.57.2
+langchain-openai
+langchain-community

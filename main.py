@@ -8,6 +8,7 @@ from agents.commentor import commentor_agent
 from agents.readme_agent import readme_agent
 from agents.commit_agent import commit_agent
 from agents.doc_agent import doc_agent
+from agents.diagram_agent import diagram_agent
 
 load_dotenv()
 
@@ -40,6 +41,11 @@ class RepoState(TypedDict, total=False):
     # step 6: Docs agent
     project_docs: str
 
+    # step 7: Diagram agent
+    diagram_mermaid: Optional[str]
+    diagram_status: Optional[str]
+
+
 ## create LangGraph
 def build_graph():
     builder = StateGraph(RepoState)
@@ -49,6 +55,7 @@ def build_graph():
     builder.add_node("ReadmeAgent", readme_agent)
     builder.add_node("CommitAgent", commit_agent)
     builder.add_node("DocsAgent", doc_agent)
+    builder.add_node("DiagramAgent", diagram_agent)
 
     builder.set_entry_point("ConnectorAgent")
     builder.add_edge("ConnectorAgent", "ParserAgent")
@@ -56,7 +63,8 @@ def build_graph():
     builder.add_edge("CommentorAgent", "ReadmeAgent")
     builder.add_edge("ReadmeAgent", "CommitAgent")
     builder.add_edge("CommitAgent", "DocsAgent")
-    builder.set_finish_point("DocsAgent")
+    builder.set_finish_point("DocsAgent", "DiagramAgent")
+    builder.add_edge("DiagramAgent", END)
     return builder.compile()
 
 if __name__ == "__main__":
