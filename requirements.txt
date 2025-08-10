@@ -1,3 +1,6 @@
+fastapi
+uvicorn[standard]
+python-multipart
 langchain
 langchain-core
 langchain-groq
@@ -10,4 +13,4 @@ tqdm
 openai
 langchain-openai
 langchain-community
-md-to-pdf
+reportlab
