@@ -14,3 +14,4 @@ openai
 langchain-openai
 langchain-community
 reportlab
+loguru

@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException
-from api.models import AnalysisRequest, AnalysisResponse, StatusResponse
+from fastapi.responses import FileResponse
 import uvicorn
+import os
 
-# import background functions
-from api.background import start_analysis, get_job_status
+# Use relative imports (remove sys.path stuff)
+from .models import AnalysisRequest, AnalysisResponse
+from .background import start_analysis, get_job_status, jobs
 
 app = FastAPI(title = "Github Repo Analyzer", version = "1.0.0")
 
@@ -37,6 +39,34 @@ def check_status(task_id:str):
         raise HTTPException(status_code = 404, detail = "Task Not Found!!")
     
     return job_info
+
+@app.get("/download/{task_id}")
+def download_analysis_result(task_id: str):
+    # Step 1: Check if task exists
+    job_info = jobs.get(task_id)
+    if job_info is None:  
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    # Step 2: Check if analysis is completed
+    if job_info.get("status") != "completed":
+        raise HTTPException(status_code=400, detail="Analysis not completed yet")
+    
+    # Step 3: Get file path
+    pdf_path = job_info.get("pdf_path")
+    if not pdf_path:
+        raise HTTPException(status_code=404, detail="PDF file path not found")
+    
+    # Step 4: Check if file exists on disk
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF file not found on server")
+    
+    # Step 5: Return file
+    filename = os.path.basename(pdf_path)  # Extract filename from path
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        filename=filename
+    )    
 
 # Health check endpoint
 @app.get("/health")
