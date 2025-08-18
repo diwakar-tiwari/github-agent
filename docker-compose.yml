@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: github_analyzer_db
+    environment:
+      POSTGRES_DB: github_analyzer
+      POSTGRES_USER: analyzer_user
+      POSTGRES_PASSWORD: analyzer_password
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
